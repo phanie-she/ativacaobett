@@ -1,16 +1,16 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import Layout from "@/components/Layout";
 import QrScanner from "@/components/QrScanner";
 import { useSurvey } from "@/context/SurveyContext";
-import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { resetSurvey } = useSurvey();
   
-  React.useEffect(() => {
+  useEffect(() => {
+    // Only reset once when component mounts
     resetSurvey();
-  }, [resetSurvey]);
+  }, []); // Empty dependency array to run only once
 
   return (
     <Layout title="Escaneie o QR Code para começar">

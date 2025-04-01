@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { useSurvey } from "@/context/SurveyContext";
 import { useNavigate } from "react-router-dom";
@@ -16,14 +16,16 @@ const QrScanner: React.FC = () => {
   const navigate = useNavigate();
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     scannerRef.current = new Html5Qrcode("qr-reader");
-
+    
     const successCallback = (decodedText: string) => {
-      if (scannerRef.current) {
+      if (scannerRef.current && isScanning) {
+        setIsScanning(false);
         scannerRef.current
           .stop()
           .then(() => {
@@ -39,32 +41,40 @@ const QrScanner: React.FC = () => {
       }
     };
 
-    scannerRef.current
-      .start(
-        { facingMode: "environment" },
-        qrConfig,
-        successCallback,
-        (errorMessage) => {
-          console.log(errorMessage);
-        }
-      )
-      .catch((err) => {
-        console.error("Error starting scanner:", err);
-        toast({
-          title: "Erro",
-          description: "Não foi possível iniciar o scanner. Verifique as permissões da câmera.",
-          variant: "destructive",
+    if (!isScanning) {
+      setIsScanning(true);
+      scannerRef.current
+        .start(
+          { facingMode: "environment" },
+          qrConfig,
+          successCallback,
+          (errorMessage) => {
+            console.log(errorMessage);
+          }
+        )
+        .catch((err) => {
+          console.error("Error starting scanner:", err);
+          setIsScanning(false);
+          toast({
+            title: "Erro",
+            description: "Não foi possível iniciar o scanner. Verifique as permissões da câmera.",
+            variant: "destructive",
+          });
         });
-      });
+    }
 
     return () => {
-      if (scannerRef.current) {
+      if (scannerRef.current && isScanning) {
         scannerRef.current
           .stop()
-          .catch((err) => console.error("Error stopping scanner:", err));
+          .then(() => setIsScanning(false))
+          .catch((err) => {
+            console.error("Error stopping scanner:", err);
+            setIsScanning(false);
+          });
       }
     };
-  }, [navigate, setQrCode]);
+  }, [navigate, setQrCode]); // Do not include isScanning in dependencies
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
