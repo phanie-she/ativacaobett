@@ -3,14 +3,16 @@ import React, { useEffect } from "react";
 import Layout from "@/components/Layout";
 import QrScanner from "@/components/QrScanner";
 import { useSurvey } from "@/context/SurveyContext";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { resetSurvey } = useSurvey();
   
   useEffect(() => {
-    // Only reset once when component mounts
+    // Resetar a pesquisa ao montar o componente para garantir um estado limpo
+    console.log("Resetando survey na página inicial");
     resetSurvey();
-  }, []); // Empty dependency array to run only once
+  }, []); // Array de dependências vazio para executar apenas uma vez
 
   return (
     <Layout title="Escaneie o QR Code para começar">
@@ -22,6 +24,20 @@ const Index = () => {
             Escaneie o QR Code para iniciar a pesquisa interativa. 
             Suas respostas serão coletadas para análise posterior.
           </p>
+          
+          {/* Botão para navegação manual para teste */}
+          <Button 
+            onClick={() => {
+              // Simular um QR code escaneado para fins de teste
+              console.log("Teste de navegação manual");
+              const testCode = "teste-qr-code-" + Date.now();
+              useSurvey().setQrCode(testCode);
+              window.location.href = "/question/1";
+            }}
+            className="bg-blue-violet hover:bg-blue-violet/80 text-white"
+          >
+            Iniciar Pesquisa (Teste)
+          </Button>
         </div>
       </div>
     </Layout>
