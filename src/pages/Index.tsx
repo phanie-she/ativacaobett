@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const { resetSurvey, setQrCode } = useSurvey();
+  const { resetSurvey } = useSurvey();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -15,15 +15,6 @@ const Index = () => {
     console.log("Resetando survey na página inicial");
     resetSurvey();
   }, []); // Array de dependências vazio para executar apenas uma vez
-
-  const handleStartTest = () => {
-    // Simular um QR code escaneado para fins de teste
-    console.log("Teste de navegação manual");
-    const testCode = "teste-qr-code-" + Date.now();
-    setQrCode(testCode);
-    console.log("Redirecionando para questão 1...");
-    navigate("/question/1");
-  };
 
   const handleAdminAccess = () => {
     navigate("/admin");
@@ -41,14 +32,6 @@ const Index = () => {
           </p>
           
           <div className="space-y-4">
-            {/* Botão para navegação manual para teste */}
-            <Button 
-              onClick={handleStartTest}
-              className="bg-blue-violet hover:bg-blue-violet/80 text-white w-full"
-            >
-              Iniciar Pesquisa (Teste)
-            </Button>
-            
             {/* Botão para acesso à área administrativa */}
             <Button 
               onClick={handleAdminAccess}

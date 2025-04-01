@@ -21,36 +21,48 @@ const QrScanner: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Initialize scanner only once
+    // Cleanup function to stop scanner on unmount
+    const stopScanner = () => {
+      if (scannerRef.current && isScanning) {
+        console.log("Desligando scanner...");
+        scannerRef.current
+          .stop()
+          .then(() => {
+            console.log("Scanner desligado com sucesso");
+            setIsScanning(false);
+          })
+          .catch((err) => {
+            console.error("Error stopping scanner:", err);
+            setIsScanning(false);
+          });
+      }
+    };
+
+    // Initialize scanner if not already initialized
     if (!scannerRef.current) {
       scannerRef.current = new Html5Qrcode("qr-reader");
     }
     
     const successCallback = (decodedText: string) => {
-      if (scannerRef.current && isScanning) {
-        setIsScanning(false);
-        scannerRef.current
-          .stop()
-          .then(() => {
-            console.log("QR code escaneado:", decodedText);
-            setQrCode(decodedText);
-            toast({
-              title: "QR Code Escaneado",
-              description: "Redirecionando para a pesquisa...",
-              duration: 2000,
-            });
-            // Navegação com pequeno atraso para garantir que o toast seja exibido
-            setTimeout(() => {
-              console.log("Navegando para /question/1");
-              navigate("/question/1");
-            }, 1000);
-          })
-          .catch((err) => console.error("Error stopping scanner:", err));
-      }
+      console.log("QR code escaneado:", decodedText);
+      stopScanner();
+      
+      setQrCode(decodedText);
+      toast({
+        title: "QR Code Escaneado",
+        description: "Redirecionando para a pesquisa...",
+        duration: 2000,
+      });
+      
+      // Navegação com pequeno atraso para garantir que o toast seja exibido
+      setTimeout(() => {
+        console.log("Navegando para /question/1");
+        navigate("/question/1");
+      }, 1000);
     };
 
-    // Só iniciar o scanner se não estiver já escaneando
-    if (!isScanning) {
+    // Iniciar o scanner se não estiver já escaneando
+    if (!isScanning && scannerRef.current) {
       console.log("Iniciando o scanner...");
       setIsScanning(true);
       scannerRef.current
@@ -73,23 +85,9 @@ const QrScanner: React.FC = () => {
         });
     }
 
-    return () => {
-      // Limpeza ao desmontar componente
-      if (scannerRef.current && isScanning) {
-        console.log("Desligando scanner...");
-        scannerRef.current
-          .stop()
-          .then(() => {
-            console.log("Scanner desligado com sucesso");
-            setIsScanning(false);
-          })
-          .catch((err) => {
-            console.error("Error stopping scanner:", err);
-            setIsScanning(false);
-          });
-      }
-    };
-  }, [navigate, setQrCode]); // Não inclua isScanning nas dependências para evitar loop infinito
+    // Return cleanup function
+    return stopScanner;
+  }, [navigate, setQrCode]); 
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
