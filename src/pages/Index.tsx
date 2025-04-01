@@ -1,13 +1,30 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from "react";
+import Layout from "@/components/Layout";
+import QrScanner from "@/components/QrScanner";
+import { useSurvey } from "@/context/SurveyContext";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const { resetSurvey } = useSurvey();
+  
+  React.useEffect(() => {
+    resetSurvey();
+  }, [resetSurvey]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <Layout title="Escaneie o QR Code para começar">
+      <div className="flex-grow flex flex-col items-center justify-center">
+        <QrScanner />
+        
+        <div className="mt-8 max-w-md text-center">
+          <p className="text-gray-600 mb-4">
+            Escaneie o QR Code para iniciar a pesquisa interativa. 
+            Suas respostas serão coletadas para análise posterior.
+          </p>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
