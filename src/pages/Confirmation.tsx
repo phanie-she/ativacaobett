@@ -8,7 +8,7 @@ import { toast } from "@/components/ui/use-toast";
 
 const Confirmation = () => {
   const navigate = useNavigate();
-  const { qrCode, answers, exportToCSV } = useSurvey();
+  const { qrCode, answers } = useSurvey();
   
   // If no QR code is set or not all questions were answered, redirect
   useEffect(() => {
@@ -24,16 +24,13 @@ const Confirmation = () => {
       }
     }
     
-    // Export data when the page loads
-    exportToCSV();
-    
     // Redirect to homepage after 10 seconds
     const timer = setTimeout(() => {
       navigate("/");
     }, 10000);
     
     return () => clearTimeout(timer);
-  }, [qrCode, answers, navigate, exportToCSV]);
+  }, [qrCode, answers, navigate]);
 
   const handleFinish = () => {
     navigate("/");

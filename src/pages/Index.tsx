@@ -25,6 +25,10 @@ const Index = () => {
     navigate("/question/1");
   };
 
+  const handleAdminAccess = () => {
+    navigate("/admin");
+  };
+
   return (
     <Layout title="Escaneie o QR Code para começar">
       <div className="flex-grow flex flex-col items-center justify-center">
@@ -36,13 +40,24 @@ const Index = () => {
             Suas respostas serão coletadas para análise posterior.
           </p>
           
-          {/* Botão para navegação manual para teste */}
-          <Button 
-            onClick={handleStartTest}
-            className="bg-blue-violet hover:bg-blue-violet/80 text-white"
-          >
-            Iniciar Pesquisa (Teste)
-          </Button>
+          <div className="space-y-4">
+            {/* Botão para navegação manual para teste */}
+            <Button 
+              onClick={handleStartTest}
+              className="bg-blue-violet hover:bg-blue-violet/80 text-white w-full"
+            >
+              Iniciar Pesquisa (Teste)
+            </Button>
+            
+            {/* Botão para acesso à área administrativa */}
+            <Button 
+              onClick={handleAdminAccess}
+              variant="outline"
+              className="border-blue-violet text-blue-violet hover:bg-blue-violet/10 w-full"
+            >
+              Área Administrativa
+            </Button>
+          </div>
         </div>
       </div>
     </Layout>
