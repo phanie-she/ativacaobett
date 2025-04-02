@@ -1,6 +1,5 @@
 
 import React, { createContext, useState, useContext } from "react";
-import Papa from "papaparse";
 import { toast } from "@/components/ui/use-toast";
 
 interface SurveyContextType {
@@ -61,6 +60,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
       toast({
         title: "Dados salvos",
         description: "Suas respostas foram salvas com sucesso!",
+        duration: 3000, // Add explicit duration to ensure visibility
       });
     } catch (e) {
       console.error("Failed to save to local storage:", e);
@@ -68,6 +68,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Erro ao salvar",
         description: "Não foi possível salvar suas respostas.",
         variant: "destructive",
+        duration: 5000, // Longer duration for error messages
       });
     }
   };

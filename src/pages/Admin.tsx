@@ -64,6 +64,7 @@ const Admin = () => {
     link.click();
     document.body.removeChild(link);
     
+    // Show confirmation toast
     toast({
       title: "Exportação concluída",
       description: `${data.length} registros exportados com sucesso!`,
