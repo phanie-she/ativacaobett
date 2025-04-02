@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useContext } from "react";
 import Papa from "papaparse";
+import { toast } from "@/components/ui/use-toast";
 
 interface SurveyContextType {
   qrCode: string;
@@ -27,48 +28,48 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const exportToCSV = () => {
-    const data = [
-      {
-        qrCode,
-        question1: answers["1"] || "",
-        question2: answers["2"] || "",
-        question3: answers["3"] || "",
-        question4: answers["4"] || "",
-        timestamp: new Date().toISOString(),
-      },
-    ];
+    const surveyEntry = {
+      qrCode,
+      question1: answers["1"] || "",
+      question2: answers["2"] || "",
+      question3: answers["3"] || "",
+      question4: answers["4"] || "",
+      timestamp: new Date().toISOString(),
+    };
 
-    const csv = Papa.unparse(data);
-    const csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    console.log("Salvando dados da pesquisa:", surveyEntry);
     
     // Try to save the file using the local storage
     try {
       const previousData = localStorage.getItem("survey-data");
-      let allData = data;
+      let allData = [];
       
       if (previousData) {
         try {
           const parsedData = JSON.parse(previousData);
-          allData = [...parsedData, ...data];
+          allData = Array.isArray(parsedData) ? parsedData : [parsedData];
         } catch (e) {
           console.error("Error parsing previous data", e);
+          allData = [];
         }
       }
       
+      allData.push(surveyEntry);
       localStorage.setItem("survey-data", JSON.stringify(allData));
       console.log("Survey data saved to local storage:", allData);
+      
+      toast({
+        title: "Dados salvos",
+        description: "Suas respostas foram salvas com sucesso!",
+      });
     } catch (e) {
       console.error("Failed to save to local storage:", e);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar suas respostas.",
+        variant: "destructive",
+      });
     }
-    
-    // Also allow direct download as backup method
-    const url = URL.createObjectURL(csvData);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `survey-response-${new Date().getTime()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (

@@ -15,10 +15,17 @@ const Admin = () => {
     try {
       const storedData = localStorage.getItem("survey-data");
       if (storedData) {
-        setData(JSON.parse(storedData));
+        const parsedData = JSON.parse(storedData);
+        console.log("Dados carregados do localStorage:", parsedData);
+        setData(Array.isArray(parsedData) ? parsedData : [parsedData]);
       }
     } catch (e) {
       console.error("Error loading data", e);
+      toast({
+        title: "Erro ao carregar dados",
+        description: "Não foi possível carregar os dados salvos.",
+        variant: "destructive",
+      });
     }
   }, []);
 
@@ -32,9 +39,16 @@ const Admin = () => {
       return;
     }
 
-    const headers = Object.keys(data[0]).join(",");
+    // Garantir que todos os objetos tenham as mesmas chaves
+    const allKeys = new Set<string>();
+    data.forEach(item => {
+      Object.keys(item).forEach(key => allKeys.add(key));
+    });
+    
+    const headers = Array.from(allKeys).join(",");
     const csvRows = data.map(row => {
-      return Object.values(row).map(value => {
+      return Array.from(allKeys).map(key => {
+        const value = row[key] !== undefined ? row[key] : "";
         return `"${value}"`;
       }).join(",");
     });
